@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: List
+metadata: {}
+items:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+    labels:
+      app: revealjs
+    name: revealjs
+  spec:
+    lookupPolicy:
+      local: false
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+    labels:
+      app: revealjs
+    name: revealjs
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: revealjs:latest
+    postCommit: {}
+    resources: {}
+    source:
+      git:
+        uri: https://github.com/hakimel/reveal.js.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: NODE_ENV
+          value: development
+        from:
+          kind: ImageStreamTag
+          name: nodejs-8-rhel7:latest
+          namespace: openshift
+      type: Source
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
